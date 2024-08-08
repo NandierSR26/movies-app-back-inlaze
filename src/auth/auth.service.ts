@@ -44,15 +44,21 @@ export class AuthService {
       });
 
       await this.usersRepository.save(user);
-      console.log({ user });
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { password: _, ...rest } = user;
 
       return {
-        user,
+        user: rest,
       };
     } catch (error) {}
   }
 
-  checkToken() {}
+  async findUserByID(id: string) {
+    const user = await this.usersRepository.findOneBy({ id });
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...userData } = user;
+    return userData;
+  }
 
   getJwtToken(payload: JwtPayload) {
     const token = this.jwtService.sign(payload);
