@@ -1,18 +1,37 @@
-import { Injectable } from '@nestjs/common';
+import { LoginUserDto } from './dto/login-user.dto';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Users } from './entities/user.entity';
 import { Repository } from 'typeorm';
-import * as bcrypt from 'bcryptjs'
+import * as bcrypt from 'bcryptjs';
+import { JwtPayload } from 'jsonwebtoken';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(Users)
     private readonly usersRepository: Repository<Users>,
+    private readonly jwtService: JwtService,
   ) {}
 
-  login() {}
+  async login(LoginUserDto: LoginUserDto) {
+    const { password, email } = LoginUserDto;
+
+    const user = await this.usersRepository.findOne({ where: { email } });
+    if (!user) throw new UnauthorizedException('Credenciales incorrectas');
+
+    if (!bcrypt.compareSync(password, user.password))
+      throw new UnauthorizedException('Credenciales incorrectas.');
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password: _, ...rest } = user;
+    return {
+      user: rest,
+      token: this.getJwtToken({ id: user.id }),
+    };
+  }
 
   async register(createUserDto: CreateUserDto) {
     try {
@@ -34,6 +53,11 @@ export class AuthService {
   }
 
   checkToken() {}
+
+  getJwtToken(payload: JwtPayload) {
+    const token = this.jwtService.sign(payload);
+    return token;
+  }
 
   private async createGuessSession() {
     let guest_session_id: string = '';
