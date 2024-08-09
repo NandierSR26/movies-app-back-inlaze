@@ -1,8 +1,16 @@
+import { InjectRepository } from '@nestjs/typeorm';
 import { AddRatingDto } from './dto/add-rating.dto';
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { FavoriteMovies } from './entities/favorite-movies.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class MoviesService {
+  constructor(
+    @InjectRepository(FavoriteMovies)
+    private readonly favoriteMoviesRepositoty: Repository<FavoriteMovies>,
+  ) {}
+
   async rateMovie(
     id_movie: number,
     guest_session_id: string,
@@ -29,5 +37,14 @@ export class MoviesService {
         message: 'Calificación registrada',
       };
     } catch (error) {}
+  }
+
+  async addFavorite(id_movie: string) {
+    const movie = this.favoriteMoviesRepositoty.create({
+      id: id_movie,
+      favorite: true,
+    });
+    await this.favoriteMoviesRepositoty.save(movie);
+    return movie;
   }
 }

@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   Param,
   Post,
   Request,
@@ -24,5 +25,10 @@ export class MoviesController {
   ) {
     const { guest_session_id } = req['user'] as Users;
     return this.moviesService.rateMovie(id, guest_session_id, addRatingDto);
+  }
+
+  @Get('/add-favorite/:id')
+  addFavorite(@Param('id') id: string) {
+    return this.moviesService.addFavorite(id);
   }
 }
