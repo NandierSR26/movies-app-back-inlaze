@@ -4,6 +4,7 @@ import {
   Get,
   Param,
   Post,
+  Query,
   Request,
   UseGuards,
 } from '@nestjs/common';
@@ -30,5 +31,13 @@ export class MoviesController {
   @Get('/add-favorite/:id')
   addFavorite(@Param('id') id: string) {
     return this.moviesService.addFavorite(id);
+  }
+
+  @Get('/favorites')
+  getFavorites(
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10,
+  ) {
+    return this.moviesService.getFavorites({ page, limit });
   }
 }

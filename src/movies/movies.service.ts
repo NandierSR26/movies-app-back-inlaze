@@ -47,4 +47,31 @@ export class MoviesService {
     await this.favoriteMoviesRepositoty.save(movie);
     return movie;
   }
+
+  async getFavorites({ page, limit }) {
+    const offset = (page - 1) * limit;
+
+    const moviesIds = await this.favoriteMoviesRepositoty.find({
+      skip: offset,
+      take: limit,
+      select: {
+        id: true,
+      },
+    });
+
+    const movies = await Promise.all(
+      moviesIds.map(async (movie) => {
+        return await this.getMovieDetails(movie.id);
+      }),
+    );
+
+    return movies;
+  }
+
+  private async getMovieDetails(id: string) {
+    const url = `${process.env.TMDB_API_BASE_URL}/movie/${id}?api_key=${process.env.TMDB_APY_KEY}`;
+    const resp = fetch(url);
+    const data = (await resp).json();
+    return data;
+  }
 }
