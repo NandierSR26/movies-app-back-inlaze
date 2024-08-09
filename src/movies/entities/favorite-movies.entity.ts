@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import { Users } from 'src/auth/entities/user.entity';
+import { Column, Entity, ManyToOne, PrimaryColumn } from 'typeorm';
 
 @Entity('favorite_movies')
 export class FavoriteMovies {
@@ -10,4 +11,7 @@ export class FavoriteMovies {
     default: true,
   })
   favorite: boolean;
+
+  @ManyToOne(() => Users, (user) => user.favorite_movies)
+  user: string;
 }

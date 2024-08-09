@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { FavoriteMovies } from 'src/movies/entities/favorite-movies.entity';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'users' })
 export class Users {
@@ -23,18 +24,9 @@ export class Users {
 
   @Column({
     type: 'text',
-    nullable: true,
-  })
-  avatar?: string;
-
-  @Column({
-    type: 'text',
   })
   guest_session_id: string;
 
-  @Column({
-    type: 'boolean',
-    default: true,
-  })
-  active: boolean;
+  @OneToMany(() => FavoriteMovies, (movie) => movie.user)
+  favorite_movies: FavoriteMovies;
 }

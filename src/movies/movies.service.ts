@@ -39,10 +39,11 @@ export class MoviesService {
     } catch (error) {}
   }
 
-  async addFavorite(id_movie: string) {
+  async addFavorite(id_movie: string, id_user: string) {
     const movie = this.favoriteMoviesRepositoty.create({
       id: id_movie,
       favorite: true,
+      user: id_user,
     });
     await this.favoriteMoviesRepositoty.save(movie);
     return movie;

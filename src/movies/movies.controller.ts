@@ -29,8 +29,10 @@ export class MoviesController {
   }
 
   @Get('/add-favorite/:id')
-  addFavorite(@Param('id') id: string) {
-    return this.moviesService.addFavorite(id);
+  @UseGuards(AuthGuard)
+  addFavorite(@Request() req: Request, @Param('id') id: string) {
+    const { id: idUser } = req['user'] as Users;
+    return this.moviesService.addFavorite(id, idUser);
   }
 
   @Get('/favorites')
