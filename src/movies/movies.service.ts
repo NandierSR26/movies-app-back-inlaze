@@ -49,10 +49,11 @@ export class MoviesService {
     return movie;
   }
 
-  async getFavorites({ page, limit }) {
+  async getFavorites({ page, limit, id_user }) {
     const offset = (page - 1) * limit;
 
     const moviesIds = await this.favoriteMoviesRepositoty.find({
+      where: { id: id_user },
       skip: offset,
       take: limit,
       select: {

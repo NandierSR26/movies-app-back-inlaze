@@ -36,10 +36,13 @@ export class MoviesController {
   }
 
   @Get('/favorites')
+  @UseGuards(AuthGuard)
   getFavorites(
+    @Request() req: Request,
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 10,
   ) {
-    return this.moviesService.getFavorites({ page, limit });
+    const { id: id_user } = req['user'] as Users;
+    return this.moviesService.getFavorites({ page, limit, id_user });
   }
 }
