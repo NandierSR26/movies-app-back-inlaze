@@ -3,10 +3,11 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Users } from './entities/user.entity';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 import { JwtPayload } from 'jsonwebtoken';
 import { JwtService } from '@nestjs/jwt';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -14,6 +15,7 @@ export class AuthService {
     @InjectRepository(Users)
     private readonly usersRepository: Repository<Users>,
     private readonly jwtService: JwtService,
+    private readonly datasource: DataSource,
   ) {}
 
   async login(LoginUserDto: LoginUserDto) {
@@ -49,6 +51,22 @@ export class AuthService {
 
       return {
         user: rest,
+      };
+    } catch (error) {}
+  }
+
+  async resetPassword(id: string, updateUserDto: UpdateUserDto) {
+    try {
+      const user = await this.usersRepository.findOneBy({ id });
+      if (!user) throw new UnauthorizedException('Este usuario no existe!');
+
+      const { password } = updateUserDto;
+      const newPass = bcrypt.hashSync(password, 10);
+      await this.usersRepository.update(id, { password: newPass });
+      const updatedUser = await this.usersRepository.findOneBy({ id });
+
+      return {
+        user: updatedUser,
       };
     } catch (error) {}
   }
