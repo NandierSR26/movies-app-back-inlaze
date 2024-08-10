@@ -28,11 +28,15 @@ export class MoviesController {
     return this.moviesService.rateMovie(id, guest_session_id, addRatingDto);
   }
 
-  @Get('/add-favorite/:id')
+  @Post('/add-favorite/:id')
   @UseGuards(AuthGuard)
-  addFavorite(@Request() req: Request, @Param('id') id: string) {
-    const { id: idUser } = req['user'] as Users;
-    return this.moviesService.addFavorite(id, idUser);
+  addFavorite(
+    @Request() req: Request,
+    @Param('id') id_movie: string,
+    @Body() favorite: boolean,
+  ) {
+    const { id: id_user } = req['user'] as Users;
+    return this.moviesService.addFavorite({ id_movie, id_user, favorite });
   }
 
   @Get('/favorites')
