@@ -45,4 +45,9 @@ export class MoviesController {
     const { id: id_user } = req['user'] as Users;
     return this.moviesService.getFavorites({ page, limit, id_user });
   }
+
+  @Get('/images/:id')
+  getMovieImages(@Param('id') id: string) {
+    return this.moviesService.getMovieImages(id);
+  }
 }

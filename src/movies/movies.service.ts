@@ -70,6 +70,21 @@ export class MoviesService {
     return movies;
   }
 
+  async getMovieImages(id: string) {
+    const url = `${process.env.TMDB_API_BASE_URL}/movie/${id}/images?api_key=${process.env.TMDB_APY_KEY}`;
+    const resp = await fetch(url);
+    const data = await resp.json();
+
+    const images = data.backdrops.slice(0, 2).map((image) => ({
+      id,
+      file_path: image.file_path,
+      width: image.width,
+      height: image.height,
+    }));
+
+    return images;
+  }
+
   private async getMovieDetails(id: string) {
     const url = `${process.env.TMDB_API_BASE_URL}/movie/${id}?api_key=${process.env.TMDB_APY_KEY}`;
     const resp = fetch(url);
